@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %} {% endblock title %}</title>
+  <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/bootstrap.min.css') }}>
+  <link rel="stylesheet" type="text/css" href={{  url_for('static', filename='css/bootstrap.css') }}>
+  <link rel="stylesheet" type="text/css" href={{  url_for('static', filename='css/main.css') }}>
+  <link rel="stylesheet" type="text/css" href={{  url_for('static', filename='css/footer.css') }}>
+  <link rel="stylesheet" type="text/css" href={{  url_for('static', filename='css/autocomplete.css') }}>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+  </script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js">
+  </script>
+ 
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+  <script>
+    var user = '{{ session.username }}'
+    var quantity = 1;
+
+    function eraseCookie(name) {
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;domain=127.0.0.1;';
+    }
+  </script>
+
+  {% block head %}
+  {% endblock head %}
+
+  <style>
+    .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary" style="border-radius: 0%;" id="navbar">
+    <a class="navbar-brand" href={{ url_for('index') }}>Lotus</a>
+
+
+    <div class="collapse navbar-collapse" id="navbarColor03">
+      <ul class="navbar-nav mr-auto">
+
+        <form autocomplete="off" action="/search" method="post" class="form-inline my-2 my-lg-0">
+          <input style="width: 250px;" id="search" name="search" class="form-control mr-sm-3 " type="text" placeholder="Search">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+
+        <li class="nav-item active">
+          <a class="nav-link" href={{ url_for('category', category_name="phone") }}>Phone<span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href={{ url_for('category', category_name="laptop") }}>Laptop<span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href={{ url_for('category', category_name="tablet") }}>Tablet<span class="sr-only">(current)</span></a>
+        </li>
+
+      </ul>
+    </div>
+
+    <div class="form-inline my-2 my-lg-0">
+      {% if session.user_id %}
+      <div class="nav-item dropdown mx-2">
+        {% if session.image %}
+        <img src={{ url_for('static', filename="/product_image/" + session.image) }} height="30" width="30">
+        {% else %}
+        <img src="{{ gravatar(email=session['email'], size=20) }}">
+        {% endif %}
+        <a style="text-decoration: none;color:aliceblue" class=" dropdown-toggle" data-toggle="dropdown" href="#"
+          role="button" aria-haspopup="true" aria-expanded="false"></a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {% if session.role == 0 %}<a class="dropdown-item" href="{{ url_for('sell') }}">Admin</a>{% endif %}
+          <a class="dropdown-item" href={{ url_for('user', username=session["username"]) }}>Profile</a>
+          <a class="dropdown-item" href="{{ url_for('my_order') }}">Orders</a>
+          <a class="dropdown-item" href={{ url_for('logout') }}>Log out</a>
+        </div>
+        <script>eraseCookie('cart')</script>
+      </div>
+      {% else %}
+      <a href={{ url_for('signup') }} class="btn btn-warning mx-2">Sign up</a>
+      <a href={{ url_for('login') }} class="btn btn-warning ">Login</a>
+      {% endif %}
+      <a href={{ url_for('cart') }}>
+        <img id="cart-icon" style="width: 25px; display: inline-block; margin-left: 15px;"
+          src={{ url_for('static', filename='images/cart.png') }}>
+      </a>
+      <p id="cart-total">{{ numberCart }}</p>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03"
+      aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+  
+  </nav>
+
+
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div style="margin-top: 25px; border-radius: 0%;" class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    <span>{{ message }}</span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+
+  <div class='container'>
+    <br>
+    {% block content %}
+    {% endblock content %}
+  </div>
+
+  <script src={{ url_for('static', filename="js/bootnavbar.js") }}></script>
+  <script src={{ url_for('static', filename="js/cart.js") }}></script>
+
+  <script>
+    $("#navbar").bootnavbar();
+
+    function getCookie(name) {
+      var cookieArr = document.cookie.split(";");
+
+      for (var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+
+        if (name == cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    }
+
+    var cart = JSON.parse(getCookie('cart'))
+    if (cart == undefined) {
+      cart = {}
+      console.log("Cart was created!")
+      document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+    }
+    console.log('Cart:', cart)
+
+   
+      var list_product_name = "{{ getAllNameProduct() }}";
+      var array = list_product_name.trim().split(',');
+
+      function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+  autocomplete(document.getElementById("search"),array);
+  </script>
+
+  
+<footer>
+    {% block footer %}
+    {% endblock %}
+</footer>
+</body>
+
+</html>

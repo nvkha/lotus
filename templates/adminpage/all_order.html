@@ -1,0 +1,36 @@
+{% extends 'sell.html' %}
+
+{% block title %}
+    Orders
+{% endblock title %}
+
+{% block head %}
+{% endblock head %}
+
+
+
+{% block div %}
+  <h1>Orders</h1>
+  <br>
+  <div class="box-element">
+    <div class="cart-row">
+        <div style="flex: 2">Order</div>
+        <div style="flex: 2">Date</div>
+        <div style="flex: 1">Status</div>
+        <div style="flex: 1">Total</div>
+        <div style="flex: 1"></div>
+    </div>
+        {% for order in orders %} 
+          <div class="cart-row">
+              <div style="flex: 2"># {{ order.id }} {{ order.order_name }}</div>
+              <div style="flex: 2">{{ order.order_date }}</div>
+              <div style="flex: 1">{% if order.complete == 0 %} Possessing {% else %} Finish {% endif %}</div>
+              <div style="flex: 1">${% if (order.id | getTotal) == None %} 0 {% else %} {{ order.id | getTotal }} {% endif %}</div>
+              <div style="flex: 1"><a href={{ url_for('view_order', id=order.id) }} class="btn btn-outline-primary">View</a></div>
+          </div>
+        {% endfor %}
+  </div>
+  <br>
+  {{ pagination.links }}
+{% endblock %}
+

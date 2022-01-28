@@ -1,0 +1,106 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    Profile
+{% endblock title %}
+
+{% block head %}
+    {{ moment.include_jquery() }}
+    {{ moment.include_moment() }}
+{% endblock head %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% if user.image %}
+                <img width="230" height="250" class="img-rounded profile-thumbnail mr-2" src="{{ url_for('static', filename='/product_image/' + user.image) }}">
+            {% else %}
+                <img class="img-rounded profile-thumbnail mr-2" src="{{ gravatar(email=user.email, size=230) }}">
+            {% endif %}
+        </div>
+
+        <div class="col-lg-99">
+            <h2>{{ user.username }}</h2>
+            {% if user.username or user.location %}
+            <p>
+                {% if user.realname %}{{ user.realname }}{% endif %}
+                {% if user.location %}
+                From <a style="color: blue;" href="http://maps.google.com/?q={{ user.location }}">
+                {{ user.location }}
+                </a>
+                {% endif %}
+            </p>
+            <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
+            <p>Member since {{ moment(member_since).format('L') }}</p>
+            <p>Last seen {{ moment(last_seen).fromNow() }}.</p>
+            {% endif %}
+            
+            {% if session.username == user.username %}
+            <div class="row">
+                <a href="{{  url_for('edit_profile') }}" class="btn btn-outline-secondary rounded-0 mr-3">Edit Profile</a>
+                <a href="{{  url_for('change_password') }}" class="btn btn-outline-secondary rounded-0">Change Password</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock content %}
+
+
+{% block footer %}
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+            <h6>PAYMENT METHODS</h6>
+            <div class="icon-container">
+                <i class="fa fa-cc-paypal"></i>
+                <i class="fa fa-credit-card" aria-hidden="true"></i>
+            </div>
+            </div>
+
+
+            <div class="col-xs-6 col-md-3">
+            <h6>Quick Links</h6>
+            <ul class="footer-links">
+                <li><a href="http://scanfcode.com/about/">About Us</a></li>
+                <li><a href="http://scanfcode.com/contact/">Contact Us</a></li>
+                <li><a href="http://scanfcode.com/contribute-at-scanfcode/">Contribute</a></li>
+                <li><a href="http://scanfcode.com/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="http://scanfcode.com/sitemap/">Sitemap</a></li>
+            </ul>
+            </div>
+
+            <div class="col-xs-6 col-md-3">
+            <h6>CONTACT</h6>
+            <ul class="footer-links">
+                <li><a href="#">Address: U Minh, Ca Mau</a></li>
+                <li><a href="#">Phone: 091934xxxx</a></li>
+                <li><a href="#">Email: nvkha97@gmail.com</a></li>
+            </ul>
+            </div>
+        </div>
+        <hr>
+        </div>
+        <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-6 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2017 All Rights Reserved by 
+        <a href="#">Scanfcode</a>.
+            </p>
+            Logo created by <a href="https://www.designevo.com/logo-maker/" title="Free Online Logo Maker">DesignEvo logo maker</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+            <ul class="social-icons">
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+                <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>   
+            </ul>
+            </div>
+        </div>
+        </div>
+    </footer>
+{% endblock %}

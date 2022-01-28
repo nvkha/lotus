@@ -1,0 +1,39 @@
+.rating {
+    margin-top: 50px;
+    display: flex;
+    transform:translate(-74%, -50%) rotateY(180deg);
+  }
+  .rating input {
+    display: none;
+  }
+  .rating label {
+    cursor: pointer;
+    width: 50px;
+    
+  }
+  .rating label::before {
+    content: '\f005';
+    font-family: fontAwesome;
+    position: relative;
+    display: block;
+    font-size: 30px;
+    color: #101010;
+  }
+  .rating label::after {
+    content: '\f005';
+    font-family: fontAwesome;
+    position: absolute;
+    display: block;
+    font-size: 30px;
+    color: orange;
+    top: 0;
+    opacity: 0;
+    transition: 0.5s;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  .rating label:hover::after,
+  .rating label:hover ~ label::after,
+  .rating input:checked ~ label::after
+  {
+    opacity: 1;
+  }

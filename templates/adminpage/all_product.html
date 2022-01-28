@@ -1,0 +1,78 @@
+{% extends 'sell.html' %}
+
+{% block title %}
+    Products
+{% endblock title %}
+
+{% block head %}
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+{% endblock head %}
+
+
+
+{% block div %}
+  <h1>Products</h1>
+  <a href={{ url_for('add_product') }} type="button" class="btn btn-outline-success mb-3 rounded-0 mt-3">Add product</a>
+  <div class="box-element">
+    <div class="cart-row">
+        <div style="flex: 2"></div>
+        <div style="flex: 2">Item</div>
+        <div style="flex: 1">Price</div>
+        <div style="flex: 1">Quantity</div>
+        <div style="flex: 1"></div>
+    </div>
+      {% for product in products %}
+          <div class="cart-row">
+              {% if product.image %}
+                <div style="flex: 2"><img class="row-image lazy" data-src={{ url_for('static', filename='/product_image/' + product.image) }}></div>
+              {% else %}
+                <div style="flex: 2"><img class="row-image lazy" data-src={{ url_for('static', filename='images/placeholder.png') }}></div>
+              {% endif %}
+              <div style="flex: 2">{{ product.name }}</div>
+              <div style="flex: 1">{{ product.price | vnd }}</div>
+              <div style="flex: 1"><p class="quantity">{{ product.quantity }}</p></div>
+              <div style="flex: 1">
+                <a style="text-decoration: none;" href={{ url_for('edit_product', id=product.id) }}><i class="chg-quantity icon-edit"></i></a>
+                <a style="text-decoration: none;" href={{ url_for('delete_product', id=product.id) }}><i class="chg-quantity icon-remove"></i></a>      
+              </div>
+          </div>
+        {% endfor %}
+  </div>
+
+  <br>
+  {{ pagination.links }}
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+  var lazyloadImages = document.querySelectorAll("img.lazy");    
+  var lazyloadThrottleTimeout;
+  
+  function lazyload () {
+    if(lazyloadThrottleTimeout) {
+      clearTimeout(lazyloadThrottleTimeout);
+    }    
+    
+    lazyloadThrottleTimeout = setTimeout(function() {
+        var scrollTop = window.pageYOffset;
+        lazyloadImages.forEach(function(img) {
+            if(img.offsetTop < (window.innerHeight + scrollTop)) {
+              img.src = img.dataset.src;
+              img.classList.remove('lazy');
+            }
+        });
+        if(lazyloadImages.length == 0) { 
+          document.removeEventListener("scroll", lazyload);
+          window.removeEventListener("resize", lazyload);
+          window.removeEventListener("orientationChange", lazyload);
+        }
+    }, 20);
+  }
+  
+  document.addEventListener("scroll", lazyload);
+  window.addEventListener("resize", lazyload);
+  window.addEventListener("orientationChange", lazyload);
+});
+  </script>
+{% endblock %}
+
+

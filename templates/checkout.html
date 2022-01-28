@@ -1,0 +1,227 @@
+{% extends 'main.html' %}
+
+{% block title %}
+	Checkout
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="css/blue.css">
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="box-element" id="form-wrapper">
+                <form name="form" id="form" action="/checkout" method="post">
+                    <div id="shipping-info">
+						<p>Shipping Address:</p>
+						<hr>
+						<div class="row ">
+							<label class="col-2">Name</label>
+							<input onchange="isEveryInputEmpty()" id="name" required class="form-control mb-3 col-9 rounded-0" type="text" name="name" placeholder="">
+						</div>
+						<div class="row">
+							<label class="col-2">Phone Number</label>
+							<input onchange="isEveryInputEmpty()" id="phonenumber" required class="form-control mb-3 col-9 rounded-0" type="text" name="phonenumber" placeholder="">
+						</div>
+						{% if not session.user_id %}
+							<div class="row">
+								<label class="col-2">Email</label>
+								<input onchange="isEveryInputEmpty()" id="email" required class="form-control mb-3 col-9 rounded-0" type="email" name="email" placeholder="">
+							</div>
+						{% endif %}
+
+						<div class="row">
+							<label class="col-2">Address</label>
+							<input onchange="isEveryInputEmpty()" id="address" required class="form-control mb-3 col-9 rounded-0" type="text" name="address" placeholder="">
+						</div>
+                    </div>
+                
+                    <hr id="hr">
+                    <button id="form-button" class="btn btn-success btn-block rounded-0">Continue</button>
+            </div>
+            
+            <br>
+
+
+				<div class="box-element form-check hidden" id="payment-info"> 
+					<p>Payment methods:</p>
+					<div class="mb-1 col-6 ml-2">
+						<label><input id=1 onclick="displayPayment(this.id)" type="radio" name="iCheck" class="iradio_flat-blue">Paypal</label>
+						<div class="hidden" id="paypal-button-container"></div>
+					</div>
+					<div class="mb-1 col-6 ml-2">
+						<label><input id=2 onclick="displayPayment(this.id)" type="radio" name="iCheck" class="iradio_flat-blue"> 
+							Cash on Delivery (COD)</label>
+					</div>
+				</div>
+
+				<br>
+				<button id="pay" onclick="clickPay()" class="btn btn-primary btn-block rounded-0 hidden" disabled>Pay now</button>
+				<br>
+			</form>
+        </div>
+
+    <div class="col-lg-5">
+        <div class="box-element">
+            <a  class="btn btn-outline-dark" href={{ url_for('cart') }}>&#x2190; Back to Cart</a>
+				<hr>
+				<h3>Order Summary</h3>
+				<hr>
+				{% if order_details %}
+					{% for item in order_details %}
+						<div class="cart-row">
+							{% if item.product_id | getProductImage %}
+                                <div style="flex: 2"><img class="row-image" src={{ url_for('static', filename='product_image/' + item.product_id | getProductImage) }}></div>
+                            {% else %}
+                                <div style="flex: 2"><img class="row-image" src={{ url_for('static', filename='images/placeholder.png') }}></div>
+                            {% endif %}
+							<div style="flex:2"><p>{{ item.product_id | getProductName }}</p></div>
+							<div style="flex:1"><p>{{ item.price | vnd }}</p></div>
+							<div style="flex:1"><p>x{{ item.quantity }}</p></div>
+						</div>
+					{% endfor %}
+				{% endif  %}
+				<h5>Items:   {{ numberCart }} </h5>
+				<h5>Total:   {% if total %} {{ total | vnd }} {% else %} 0 {% endif %}</h5>
+        </div>
+    </div>
+</div>
+	<script type="text/javascript">
+		function clickPay() {
+			$('#form').submit();
+		}
+
+		function isEveryInputEmpty() {
+				var a = document.forms["form"]["phonenumber"].value;
+				var b = document.forms["form"]["name"].value;
+				var user_id = '{{ session.user_id }}'
+				if (user_id == null) {
+					var c = document.forms["form"]["email"].value;
+				}
+				
+				var d = document.forms["form"]["address"].value;
+				if (a == null || a == "", b == null || b == "", c == null || c == "", d == null || d == "") {
+					document.getElementById("pay").disabled = true;
+				}
+				else {
+					document.getElementById("pay").disabled = false;
+				}
+		}
+
+		var form = document.getElementById('form-button')
+		form.addEventListener('click', function(e) {
+			e.preventDefault()
+			console.log('click...')
+		
+			document.getElementById('form-button').classList.add('hidden')
+			document.getElementById('payment-info').classList.remove('hidden')
+			document.getElementById('hr').classList.add('hidden')
+		})
+	</script>
+
+	<script src="https://www.paypal.com/sdk/js?client-id=AVF0XBnKER9UDEDXjiB6RneAi1_16zNnBNERCSE6V73qpex0jlaJwBamoucrQ9jcgORBp39ITIt4UlBM&currency=USD"></script>
+
+	<script>
+		var total = '{{ total }}'
+		// Render the PayPal button into #paypal-button-container
+		
+		paypal.Buttons({
+			
+			style: {
+				color: 'blue',
+				shape: 'rect',
+			},
+
+			// Set up the transaction
+			createOrder: function(data, actions) {
+				return actions.order.create({
+					purchase_units: [{
+						amount: {
+							value: parseFloat(Math.round(total / 23000))
+						}
+					}]
+				});
+			},
+
+			// Finalize the transaction
+			onApprove: function(data, actions) {
+				return actions.order.capture().then(function(details) {
+					$('#form').submit();
+				});
+			}
+		}).render('#paypal-button-container');
+
+
+		function displayPayment(id) {
+			var checkBox = document.getElementById(id);
+			if (id == 1 && checkBox.checked) {
+				document.getElementById('pay').classList.add('hidden');
+				document.getElementById('paypal-button-container').classList.remove('hidden');			
+			}
+			else {
+				document.getElementById('paypal-button-container').classList.add('hidden');
+				document.getElementById('pay').classList.remove('hidden');		
+			}
+		}
+	</script>
+{% endblock content %}
+
+
+{% block footer %}
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+            <h6>PAYMENT METHODS</h6>
+            <div class="icon-container">
+                <i class="fa fa-cc-paypal"></i>
+                <i class="fa fa-credit-card" aria-hidden="true"></i>
+            </div>
+            </div>
+
+
+            <div class="col-xs-6 col-md-3">
+            <h6>Quick Links</h6>
+            <ul class="footer-links">
+                <li><a href="http://scanfcode.com/about/">About Us</a></li>
+                <li><a href="http://scanfcode.com/contact/">Contact Us</a></li>
+                <li><a href="http://scanfcode.com/contribute-at-scanfcode/">Contribute</a></li>
+                <li><a href="http://scanfcode.com/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="http://scanfcode.com/sitemap/">Sitemap</a></li>
+            </ul>
+            </div>
+
+            <div class="col-xs-6 col-md-3">
+            <h6>CONTACT</h6>
+            <ul class="footer-links">
+                <li><a href="#">Address: U Minh, Ca Mau</a></li>
+                <li><a href="#">Phone: 091934xxxx</a></li>
+                <li><a href="#">Email: nvkha97@gmail.com</a></li>
+            </ul>
+            </div>
+        </div>
+        <hr>
+        </div>
+        <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-6 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2017 All Rights Reserved by 
+        <a href="#">Scanfcode</a>.
+            </p>
+            Logo created by <a href="https://www.designevo.com/logo-maker/" title="Free Online Logo Maker">DesignEvo logo maker</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+            <ul class="social-icons">
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+                <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>   
+            </ul>
+            </div>
+        </div>
+        </div>
+    </footer>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css" media="screen">
+        table{
+            border-collapse: collapse;
+            width: 100%;
+        }
+        td, th{
+            padding: 15px;
+            text-align: left;
+        }
+        thead {
+            background-color:#228B22;
+            color:aliceblue;
+            font-size: large;
+        }
+      </style>
+</head>
+
+<body>
+  <p>Thank you {{ name }} for ordering at Lotus,</p>
+
+  <p>Order#: {{ order.id }}</p>
+  <p>Order Date: {{ order.order_date }}</p>
+  <p>Address: {{ order.order_address }}</p>
+
+  <br>
+  <table style="border: lightgray 1px solid;">       
+        <thead>
+            <tr style="border-bottom: 1px solid;">
+                <td class="cell">Name</td>    
+                <td class="cell">Qty</td>
+                <td class="cell">Price</td>  
+            </tr>
+        </thead>
+        
+        <tbody style="background-color:#F5F5F5">
+            {% for item in order_detail %}
+                <tr>  
+                    <td class="cell">{{ item.product_id | getProductName }}</td>    
+                    <td class="cell">{{ item.quantity }}</td> 
+                    <td class="cell">{{ item.price | vnd }}</td> 
+                </tr>
+            {% endfor %}  
+        </tbody>     
+    </table>
+    <br>
+    <p style="text-align:right; font-size: large;">Subtotal ({{ order_detail | length }} items): {{ (order.id | getTotal) | vnd }}</p>
+    <p style="text-align:right; font-size: large;">Flat-rate Shipping: 0₫</p>
+    <p style="text-align:right; font-size: large;">Discount: 0₫</p>
+    <p style="text-align:right; font-size: large;"><strong>Order Total: {{ (order.id | getTotal) | vnd }}</strong></p>
+
+
+  <br>
+  <p>Sincerely,</p>
+
+  <p>The Lotus</p>
+
+  <p>Note: replies to this email address are not monitored.</p>
+</body>
+

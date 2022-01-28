@@ -1,0 +1,114 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    Add Product
+{% endblock title %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <h3 style="text-align:center" class="mb-5">Update product images</h3>
+    <form style="margin-left: 120px;" id="form" method='post' enctype=multipart/form-data action="{{ url_for('upload', name=name) }}">
+        <div class="form-group row">
+            {% for i in range(6) %}
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <input type="image" id= {{ 'im' + i | string }} class="img-rounded profile-thumbnail" src={{ url_for('static', filename="/images/placeholder.png") }} height="200" width="180">
+                        <input style="display: none;" type="file" name={{ i | string }} class="form-control-file" id= {{ 'ip' + i | string }} aria-describedby="fileHelp">
+                        <small id="fileHelp" class="form-text text-muted">Click to upload the image.</small>
+                    </div>
+                </div> 
+            {% endfor %}
+        </div>
+        <button style="border-radius: 0%;margin-left: 350px;" id="btn" type="submit" class="btn btn-primary col-2 mt-4">Save</button>
+    </form>
+
+    {% for i in range(6) %}
+        <script>
+             $("{{ '#im' + i | string }}").click( function() {
+                $("{{ '#ip' + i | string }}").click();
+                $("#form").submit(function(e){
+                    e.preventDefault();
+                });
+            });
+            
+            $("{{ '#ip' + i | string }}").change(function() {
+            if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+            $("{{ '#im' + i | string }}").attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(this.files[0]); // convert to base64 string
+            }
+        });
+        </script>
+    {% endfor %}
+    <script>
+        $("#btn").click(function(e){
+                $("#form").unbind();
+            });
+    </script>
+    
+{% endblock %}
+
+{% block footer %}
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+            <h6>PAYMENT METHODS</h6>
+            <div class="icon-container">
+                <i class="fa fa-cc-paypal"></i>
+                <i class="fa fa-credit-card" aria-hidden="true"></i>
+            </div>
+            </div>
+
+
+            <div class="col-xs-6 col-md-3">
+            <h6>Quick Links</h6>
+            <ul class="footer-links">
+                <li><a href="http://scanfcode.com/about/">About Us</a></li>
+                <li><a href="http://scanfcode.com/contact/">Contact Us</a></li>
+                <li><a href="http://scanfcode.com/contribute-at-scanfcode/">Contribute</a></li>
+                <li><a href="http://scanfcode.com/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="http://scanfcode.com/sitemap/">Sitemap</a></li>
+            </ul>
+            </div>
+
+            <div class="col-xs-6 col-md-3">
+            <h6>CONTACT</h6>
+            <ul class="footer-links">
+                <li><a href="#">Address: U Minh, Ca Mau</a></li>
+                <li><a href="#">Phone: 091934xxxx</a></li>
+                <li><a href="#">Email: nvkha97@gmail.com</a></li>
+            </ul>
+            </div>
+        </div>
+        <hr>
+        </div>
+        <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-6 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2017 All Rights Reserved by 
+        <a href="#">Scanfcode</a>.
+            </p>
+            Logo created by <a href="https://www.designevo.com/logo-maker/" title="Free Online Logo Maker">DesignEvo logo maker</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+            <ul class="social-icons">
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+                <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>   
+            </ul>
+            </div>
+        </div>
+        </div>
+    </footer>
+{% endblock %}
+

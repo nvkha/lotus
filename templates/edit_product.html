@@ -1,0 +1,204 @@
+{% extends 'main.html' %}
+
+{% block title %}
+Edit Product
+{% endblock title %}
+
+{% block head %}
+<script src="https://cdn.tiny.cloud/1/1hmmrf2z96fz8e4t9y6ebsj08pxlw6q5pf4xgiixn9j5x5ll/tinymce/5/tinymce.min.js"
+    referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar_mode: 'floating',
+        width: '855px',
+        height: '350px',
+        toolbar_mode: 'floating',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+    });
+</script>
+{% endblock head %}
+
+{% block content %}
+<form id="form" action={{ url_for('edit_product', id=product.id) }} enctype=multipart/form-data method="post">
+    <h1 style="text-align:center" class="mb-4">Edit product</h1>
+    <br>
+    <div class="form-group row mb-5">
+        <labe class="col-2">Product Name</labe>
+        <input id="name" name="name" class="form-control col-9" type="text" value='{{ product.name }}'>
+    </div>
+    <br>
+    <div class="form-group row mb-5">
+        <labe class="col-2">Category</labe>
+        <select id="category" name="category"  class="form-control col-9 rounded-0" required>
+            {% for category in categories %}
+                <option value={{ category.id }}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <br>
+    <div class="form-group row mb-5">
+        <labe class="col-2">Brand</labe>
+        <select id="brand" name="brand"  class="form-control col-9 rounded-0" required>
+            {% for brand in brands %}
+                <option value={{ brand.id }}>{{ brand.name }} - {{ brand.category_id | getCategoryName }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <br>
+    <div class="form-group row mb-5">
+        <labe class="col-2">Product Description</labe>
+        <textarea class="form-control col-9" id="mytextarea" name="mytextarea"> {{ product.description |safe }}
+            </textarea>
+    </div>
+    <div class="form-group row mb-5">
+        <labe class="col-2">Price</labe>
+        <input id="price" name="price" class="form-control col-9" type="number" value='{{ product.price }}'>
+    </div>
+    <div class="form-group row mb-5">
+        <labe class="col-2">Quantity</labe>
+        <input id="quantity" name="quantity" class="form-control col-9" type="number" value='{{ product.quantity }}'>
+    </div>
+
+    <br>
+    <br>
+    <div style="margin-left: 160px;" class="form-group row">
+        {% for i in range(6) %}
+        <div class="col-lg-4">
+            <div class="form-group">
+                {% if productImage %}
+                    {% if i < productImage | length %}
+                        <input type="image" id={{ 'im' + i | string }} class="img-rounded profile-thumbnail"
+                            src={{ url_for('static', filename="/product_image/" + productImage[i].image) }} height="200"
+                            width="180">
+                    {% else %}
+                        <input type="image" id={{ 'im' + i | string }} class="img-rounded profile-thumbnail"
+                            src={{ url_for('static', filename="/images/placeholder.png" ) }} height="200" width="180">
+                    {% endif %}
+                {% else %}
+                    <input type="image" id={{ 'im' + i | string }} class="img-rounded profile-thumbnail"
+                        src={{ url_for('static', filename="/images/placeholder.png" ) }} height="200" width="180">
+                {% endif %}
+                    <input style="display: none;" type="file" name={{ i | string }} class="form-control-file"
+                        id={{ 'ip' + i | string }} aria-describedby="fileHelp">
+                    <small id="fileHelp" class="form-text text-muted">Click to upload the image.</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <br>
+    <div class="form-group mt-4" style="text-align: center;">
+        <button style="border-radius: 0%;" id="btn" type="submit" class="btn btn-secondary col-2">Save</button>
+    </div>
+</form>
+
+{% for i in range(6) %}
+<script>
+    $("{{ '#im' + i | string }}").click(function () {
+        $("{{ '#ip' + i | string }}").click();
+        $("#form").submit(function (e) {
+            e.preventDefault();
+        });
+    });
+
+    $("{{ '#ip' + i | string }}").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $("{{ '#im' + i | string }}").attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(this.files[0]); // convert to base64 string
+        }
+    });
+</script>
+{% endfor %}
+
+<script>
+    $("#btn").click(function (e) {
+        $("#form").unbind();
+    });
+
+
+    Array.from(document.querySelector("#category").options).forEach(function(option_element) {
+        var category_id = '{{  product.category_id }}';
+        var brand_id = '{{ product.brand_id }}'
+
+        if (category_id == option_element.value) {
+            document.getElementById("category").selectedIndex = option_element.index;
+        }
+    });
+
+    Array.from(document.querySelector("#brand").options).forEach(function(option_element) {
+        var brand_id = '{{ product.brand_id }}'
+
+        if (brand_id == option_element.value) {
+            document.getElementById("brand").selectedIndex = option_element.index;
+        }
+    });
+</script>
+{% endblock %}
+
+
+{% block footer %}
+<!-- Site footer -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <h6>PAYMENT METHODS</h6>
+                <div class="icon-container">
+                    <i class="fa fa-cc-paypal"></i>
+                    <i class="fa fa-credit-card" aria-hidden="true"></i>
+                </div>
+            </div>
+
+
+            <div class="col-xs-6 col-md-3">
+                <h6>Quick Links</h6>
+                <ul class="footer-links">
+                    <li><a href="http://scanfcode.com/about/">About Us</a></li>
+                    <li><a href="http://scanfcode.com/contact/">Contact Us</a></li>
+                    <li><a href="http://scanfcode.com/contribute-at-scanfcode/">Contribute</a></li>
+                    <li><a href="http://scanfcode.com/privacy-policy/">Privacy Policy</a></li>
+                    <li><a href="http://scanfcode.com/sitemap/">Sitemap</a></li>
+                </ul>
+            </div>
+
+            <div class="col-xs-6 col-md-3">
+                <h6>CONTACT</h6>
+                <ul class="footer-links">
+                    <li><a href="#">Address: U Minh, Ca Mau</a></li>
+                    <li><a href="#">Phone: 091934xxxx</a></li>
+                    <li><a href="#">Email: nvkha97@gmail.com</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-6 col-xs-12">
+                <p class="copyright-text">Copyright &copy; 2017 All Rights Reserved by
+                    <a href="#">Scanfcode</a>.
+                </p>
+                Logo created by <a href="https://www.designevo.com/logo-maker/" title="Free Online Logo Maker">DesignEvo
+                    logo maker</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <ul class="social-icons">
+                    <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                    <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                    <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+                    <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

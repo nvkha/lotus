@@ -1,0 +1,126 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    Add Product
+{% endblock title %}
+
+{% block head %}
+    <script src="https://cdn.tiny.cloud/1/1hmmrf2z96fz8e4t9y6ebsj08pxlw6q5pf4xgiixn9j5x5ll/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+        selector: 'textarea',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar_mode: 'floating',
+        width: '855px',
+        height: '350px',
+        toolbar_mode: 'floating',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        });
+    </script>
+{% endblock head %}
+
+{% block content %}
+    <form action={{ url_for('add_product') }} method="post">
+        <h1 style='text-align:center' class="mb-4">Add product</h1>
+        <br>
+        <div class="form-group row mb-5">
+            <labe class="col-2">Product Name</labe>
+            <input name="name" class="form-control col-9 rounded-0" type="text" required>
+        </div>
+        <br>
+        <div class="form-group row mb-5">
+            <labe class="col-2">Category</labe>
+            <select name="category"  class="form-control col-9 rounded-0" required>
+                {% for category in categories %}
+                    <option value={{ category.id }}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br>
+        <div class="form-group row mb-5">
+            <labe class="col-2">Brand</labe>
+            <select name="brand"  class="form-control col-9 rounded-0" required>
+                {% for brand in brands %}
+                    <option value={{ brand.id }}>{{ brand.name }} - {{ brand.category_id | getCategoryName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br>
+        <div class="form-group row mb-5">
+            <labe class="col-2">Product Description</labe>
+            <textarea class="form-control col-9 rounded-0" id="mytextarea" name="mytextarea">
+            </textarea>       
+        </div>
+        <div class="form-group row mb-5">
+            <labe class="col-2">Price</labe>
+            <input name="price" class="form-control col-9 rounded-0" type="number" required>
+        </div>
+        <div class="form-group row mb-5">
+            <labe class="col-2">Quantity</labe>
+            <input name="quantity" class="form-control col-9 rounded-0" type="number" required>
+        </div>
+
+        <div class="form-group mt-4" style="text-align: center;">
+            <button style="border-radius: 0%;" type="submit" class="btn btn-secondary col-2">Save</button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+            <h6>PAYMENT METHODS</h6>
+            <div class="icon-container">
+                <i class="fa fa-cc-paypal"></i>
+                <i class="fa fa-credit-card" aria-hidden="true"></i>
+            </div>
+            </div>
+
+
+            <div class="col-xs-6 col-md-3">
+            <h6>Quick Links</h6>
+            <ul class="footer-links">
+                <li><a href="http://scanfcode.com/about/">About Us</a></li>
+                <li><a href="http://scanfcode.com/contact/">Contact Us</a></li>
+                <li><a href="http://scanfcode.com/contribute-at-scanfcode/">Contribute</a></li>
+                <li><a href="http://scanfcode.com/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="http://scanfcode.com/sitemap/">Sitemap</a></li>
+            </ul>
+            </div>
+
+            <div class="col-xs-6 col-md-3">
+            <h6>CONTACT</h6>
+            <ul class="footer-links">
+                <li><a href="#">Address: U Minh, Ca Mau</a></li>
+                <li><a href="#">Phone: 091934xxxx</a></li>
+                <li><a href="#">Email: nvkha97@gmail.com</a></li>
+            </ul>
+            </div>
+        </div>
+        <hr>
+        </div>
+        <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-6 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2017 All Rights Reserved by 
+        <a href="#">Scanfcode</a>.
+            </p>
+            Logo created by <a href="https://www.designevo.com/logo-maker/" title="Free Online Logo Maker">DesignEvo logo maker</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+            <ul class="social-icons">
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+                <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>   
+            </ul>
+            </div>
+        </div>
+        </div>
+    </footer>
+{% endblock %}

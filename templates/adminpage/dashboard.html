@@ -1,0 +1,62 @@
+{% extends 'sell.html' %}
+
+{% block title %}
+   Dashboard
+{% endblock title %}
+
+{% block div %}
+<h1>Dashboard</h1>
+<div class="row">
+    <div class="col-lg-4">
+        <div style="background-color:cornflowerblue; color:aliceblue" class="box-element">
+            <h5>Orders</h5>
+            <h4>{% if orders %} {{ orders.total }} {% else %} 0 {% endif %}</h4>
+            <a style="color:aliceblue" href="{{ url_for('all_order') }}">View Details &#8594</a>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div style="background-color:forestgreen; color:aliceblue" class="box-element">
+            <h5>Products</h5>
+            <h4>{% if products %} {{ products.total }} {% else %} 0 {% endif %}</h4>
+            <a style="color:aliceblue" href="{{ url_for('all_product') }}">View Details &#8594</a>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div style="background-color:palevioletred; color:aliceblue" class="box-element">
+            <h5>Customers</h5>
+            <h4>{% if customers %} {{ customers.total }} {% else %} 0 {% endif %}</h4>
+            <a style="color:aliceblue" href="{{ url_for('customers') }}">View Details &#8594</a>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<h5>New Orders</h5>
+<div class="box-element mt-3">
+    <div class="cart-row">
+        <div style="flex: 1"></div>
+        <div style="flex: 2">Order</div>
+        <div style="flex: 2">Status</div>
+        <div style="flex: 2">Total</div>
+        <div style="flex: 1"></div>
+    </div>
+        {% if orders_top5 %}
+            {% for order in orders_top5 %}
+                <div class="cart-row">
+                    <div style="flex: 1"></div>
+                    <div style="flex: 2">#{{ order.id }} {{ order.order_name }}</div>
+                    <div style="flex: 2">{% if order.complete == 0 %} Possessing {% else %} Finish {% endif %}</div>
+                    <div style="flex: 2">${% if (order.id | getTotal) == None %} 0 {% else %} {{ order.id | getTotal }} {% endif %}</div>
+                    <div style="flex: 1"><a href={{ url_for('view_order', id=order.id) }} class="btn btn-outline-primary">View</a></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+  </div>
+
+    
+{% endblock %}
+
+

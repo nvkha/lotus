@@ -1,0 +1,52 @@
+{% extends 'sell.html' %}
+
+{% block title %}
+   Order #{{ order.id }}
+{% endblock title %}
+
+{% block div %}
+		<h1>Order #{{ order.id }}</h1>
+		<p class="text-muted">Order date: {{ order.order_date }}</p>
+		<!--<p>{{ order.complete }}</p>-->
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="box-element" id="form-wrapper">
+                <form id="form" action="/checkout" method="post">
+                    <div id="shipping-info">
+						<p>Customer Info</p>
+						<hr>
+						<p>Name: {{ order.order_name }}</p>				
+						<p>Address: {{ order.order_address }}</p>						
+						<p>Email: {{ order.order_email }}</p>
+						<p>Phone Number: {{ order.order_phonenumber }}</p>
+                    </div>
+            </div>
+    				
+			<br>
+			</form>
+        </div>
+
+    <div class="col-lg-8">
+        <div class="box-element">
+			<h3>Order Summary</h3>
+			<hr>
+			{% for product in order_detail %}
+				<div class="cart-row">
+					{% if product.product_id | getProductImage %}
+                        <div style="flex: 2"><img class="row-image" src={{ url_for('static', filename='product_image/' + product.product_id | getProductImage) }}></div>
+                    {% else %}
+                        <div style="flex: 2"><img class="row-image" src={{ url_for('static', filename='images/placeholder.png') }}></div>
+                    {% endif %}
+					<div style="flex:2"><p>{{ product.id }}</p></div>
+					<div style="flex:1"><p>{{ product.price | vnd }}</p></div>
+					<div style="flex:1"><p>{{ product.quantity }}</p></div>
+				</div>
+			{% endfor %}
+			<h5>Items:   {{ numberItem }}</h5>
+			<h5>Total:   ${% if total.sum %} {{ total.sum }} {% else %} 0 {% endif %}</h5>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
