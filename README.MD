@@ -9,7 +9,7 @@
 ## Features
 - Views all product
 - Add product to cart
-- Checkout
+- Checkout with paypal
 - Review product
 
 ## How to install 
