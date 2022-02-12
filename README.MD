@@ -11,6 +11,8 @@
 - Add product to cart
 - Checkout with paypal
 - Review product
+- Manage profile
+- ...
 
 ## How to install 
 
